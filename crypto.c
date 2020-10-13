@@ -13,19 +13,13 @@ int crypto_init(crypto_t* self, void* key, char* method) {
     return 0;
 }
 
-void crypto_encrypt(crypto_t* self, char* msg) {
-    strncpy(self->original, msg, MAX_LENGHT);
-    self->encrypter(self);
+void crypto_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
+    self->encrypter(self, msg, msg_len, buffer);
 }
 
-void crypto_decrypt(crypto_t* self, char* cipher) {
-    memcpy(self->encrypted, cipher, MAX_LENGHT);
-    self->decrypter(self);
+void crypto_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
+    self->decrypter(self, msg, msg_len, buffer);
 }
-
-void crypto_print_original(crypto_t* self) {printf("%s\n", self->original);}
-
-void crypto_print_encrypted(crypto_t* self) {printf("%s\n",self->encrypted);}
 
 int crypto_destroy(crypto_t* self) {return 0;}
 
