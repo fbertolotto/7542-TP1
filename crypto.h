@@ -13,8 +13,10 @@ typedef struct crypto {
 } crypto_t;
 
 int crypto_init(crypto_t* self, void* key, char* method);
-void crypto_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer);
-void crypto_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer);
+void crypto_encrypt(crypto_t* self, char* msg,
+                    size_t msg_len, char* buffer, size_t buf_len);
+void crypto_decrypt(crypto_t* self, char* msg,
+                    size_t msg_len, char* buffer, size_t buf_len);
 int crypto_destroy(crypto_t* self);
 
 #endif
