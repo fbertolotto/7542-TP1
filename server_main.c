@@ -1,0 +1,74 @@
+#include "common_functions.h"
+#include "common_socket.h"
+#include "common_crypto.h"
+
+#define MAX_QUEUE 1
+#define ARGC 3
+
+static int create_listen_socket(socket_t* server, addrinfo_t* info) {
+    int sock_i = socket_init(server, info);
+    int sock_b = socket_bind(server);
+    int sock_l = socket_listen(server, MAX_QUEUE);
+    return (sock_i || sock_b || sock_l);
+}
+
+static int server_start(socket_t* server, char* port) {
+    addrinfo_t sv_hints, *server_info;
+    set_net_flags(&sv_hints);
+    get_system_info(&sv_hints, &server_info, NULL, port);
+    int c_l_s = create_listen_socket(server, server_info);
+    freeaddrinfo(server_info);
+    return c_l_s;
+}
+
+static int server_accept(socket_t* sv, socket_t* conect) {
+    return socket_accept(sv, conect);
+}
+
+static int server_decrypt(socket_t* socket, char* method, char* key) {
+    crypto_t crypto;
+    char buffer[CHUNK], saver[CHUNK];
+    memset(buffer, 0, CHUNK);
+    memset(saver, 0, CHUNK);
+
+    int cr_i = crypto_init(&crypto, (void*) key, method);
+    if (cr_i) return cr_i;
+    int bytes_recv = socket_recv(socket, buffer, CHUNK-1);
+
+    while (bytes_recv != 0) {
+        crypto_decrypt(&crypto, buffer, bytes_recv, saver, CHUNK-1);
+        fprintf(stdout, "%s", saver);
+        memset(buffer, 0, CHUNK);
+        memset(saver, 0, CHUNK);
+        bytes_recv = socket_recv(socket, buffer, CHUNK-1);
+    }
+    fprintf(stdout, "\n");
+    return 0;
+}
+
+static void server_finish(socket_t* server, socket_t* conection) {
+    socket_destroy(server);
+    socket_destroy(conection);
+}
+
+static int get_parameters(int argc, char** argv, char params[ARGC][ARG_LEN]) {
+    if (!(argc == ARGC)) return 1;
+    memcpy(params[0], argv[1], ARG_LEN);
+    clean_param(argv[2], params[1], ARG_LEN);
+    clean_param(argv[3], params[2], ARG_LEN);
+    return 0;
+}
+
+int main(int argc, char* argv[]) {
+    socket_t server, conect;
+    char params[ARGC][ARG_LEN];  // port,method,key
+    get_parameters(argc, argv, params);
+
+    if (!server_start(&server, params[0])) {
+        if (!server_accept(&server, &conect)) {
+            server_decrypt(&conect, params[1], params[2]);
+        }
+    }
+    server_finish(&server, &conect);
+    return 0;
+}
