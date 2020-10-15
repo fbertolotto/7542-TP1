@@ -68,6 +68,7 @@ int main(int argc, char* argv[]) {
     }
   }
   socket_destroy(&client);
+  crypto_destroy(&crypto);
   file_reader_destroy(&fr);
   return 0;
 }

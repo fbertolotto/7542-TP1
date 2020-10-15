@@ -14,7 +14,7 @@ void get_system_info(addrinfo_t* hints, addrinfo_t** info, char* host,
 
 void clean_param(char* arg, char* buffer, size_t buf_len) {
   memset(buffer, 0, buf_len);
-  char* tmp = strtok(arg, "=");
-  tmp = strtok(NULL, "=");
+  strtok(arg, "=");
+  char* tmp = strtok(NULL, "=");
   memcpy(buffer, tmp, buf_len);
 }

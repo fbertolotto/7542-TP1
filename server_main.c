@@ -5,6 +5,11 @@
 #define MAX_QUEUE 1
 #define ARG_N 4
 
+
+static void clean_buffer(char* buffer,int buf_len) {
+  memset(buffer,0,buf_len);
+}
+
 static int create_listen_socket(socket_t* server, addrinfo_t* info) {
   int sock_i = socket_init(server, info);
   int sock_b = socket_bind(server);
@@ -25,23 +30,32 @@ static int server_accept(socket_t* sv, socket_t* conect) {
   return socket_accept(sv, conect);
 }
 
-static int server_decrypt(socket_t* socket, char* method, char* key) {
+static void decrypt_msg(crypto_t* crypto, char* msg, int n, char* buffer) {
+  crypto_decrypt(crypto, msg, n, buffer, CHUNK - 1);
+  clean_buffer(msg, CHUNK);
+}
+
+static void show_msg(char* msg) {
+  fprintf(stdout, "%s", msg);
+  clean_buffer(msg, CHUNK);
+}
+
+static int server_process(socket_t* socket, char* method, char* key) {
   crypto_t crypto;
   char buffer[CHUNK], saver[CHUNK];
-  memset(buffer, 0, CHUNK);
-  memset(saver, 0, CHUNK);
+  clean_buffer(buffer, CHUNK);
+  clean_buffer(saver, CHUNK);
   int cr_i = crypto_init(&crypto, (void*)key, method);
-  if (cr_i) return cr_i;
+  if (cr_i) {
+    crypto_destroy(&crypto);
+    return cr_i;
+  }
   int bytes_recv = socket_recv(socket, buffer, CHUNK - 1);
-
   while (bytes_recv != 0) {
-    crypto_decrypt(&crypto, buffer, bytes_recv, saver, CHUNK - 1);
-    fprintf(stdout, "%s", saver);
-    memset(buffer, 0, CHUNK);
-    memset(saver, 0, CHUNK);
+    decrypt_msg(&crypto, buffer, bytes_recv, saver);
+    show_msg(saver);
     bytes_recv = socket_recv(socket, buffer, CHUNK - 1);
   }
-  fprintf(stdout, "\n");
   return 0;
 }
 
@@ -65,7 +79,8 @@ int main(int argc, char* argv[]) {
 
   if (!server_start(&server, params[0])) {
     if (!server_accept(&server, &conect)) {
-      server_decrypt(&conect, params[1], params[2]);
+      server_process(&conect, params[1], params[2]);
+      fprintf(stdout, "\n");
     }
   }
   server_finish(&server, &conect);
