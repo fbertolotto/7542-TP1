@@ -67,7 +67,7 @@ void swap(char* s, unsigned int i, unsigned int j) {
 }
 
 void rc4_init(char* S, void* key_p) {
-  char* key = (char*) key_p;
+  char* key = (char*)key_p;
   size_t key_len = strlen(key);
   int i, j;
   for (i = 0; i < 256; i++) S[i] = (char)i;
@@ -94,4 +94,3 @@ void rc4_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
 void rc4_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
   rc4_encrypt(self, msg, msg_len, buffer);
 }
-
