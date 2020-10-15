@@ -18,3 +18,7 @@ void clean_param(char* arg, char* buffer, size_t buf_len) {
   char* tmp = strtok(NULL, "=");
   memcpy(buffer, tmp, buf_len);
 }
+
+void clean_buffer(char* buffer, int buf_len) {
+  memset(buffer,0,buf_len);
+}

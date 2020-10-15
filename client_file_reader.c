@@ -14,7 +14,7 @@ Returns 0 if the file is over.
 int file_reader_read(file_reader_t* self, char* buffer, int buf_len) {
   memset(buffer, 0, buf_len);
   while (!feof(self->file)) {
-    fread(buffer, 64, 1, self->file);
+    fread(buffer, 1, 64, self->file);
     return 1;
   }
   return 0;

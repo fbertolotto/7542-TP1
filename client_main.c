@@ -21,6 +21,7 @@ static int send_to_sv(socket_t* client, char* msg, size_t msg_len) {
     if (bytes == -1) return 1;
     i += bytes;
   }
+  clean_buffer(msg, CHUNK);
   return 0;
 }
 
@@ -28,13 +29,13 @@ static int start_program(socket_t* client, crypto_t* crypto,
                          file_reader_t* fr) {
   int error = 1;
   char msg_buf[CHUNK], crypto_buf[CHUNK];
-  memset(msg_buf, 0, CHUNK);
-  memset(crypto_buf, 0, CHUNK);
+  clean_buffer(msg_buf, CHUNK);
+  clean_buffer(crypto_buf, CHUNK);
   while (file_reader_read(fr, msg_buf, CHUNK)) {
-    crypto_encrypt(crypto, msg_buf, strlen(msg_buf), crypto_buf, CHUNK);
-    error = send_to_sv(client, crypto_buf, strlen(crypto_buf));
-    memset(msg_buf, 0, CHUNK);
-    memset(crypto_buf, 0, CHUNK);
+    int msg_len = strlen(msg_buf);
+    crypto_encrypt(crypto, msg_buf, msg_len, crypto_buf, CHUNK);
+    clean_buffer(msg_buf, CHUNK);
+    error = send_to_sv(client, crypto_buf, msg_len);  // len crypto = len msg
   }
   return error;
 }

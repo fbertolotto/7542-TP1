@@ -67,7 +67,6 @@ int socket_send(socket_t* self, char* msg, int len) {
 }
 
 int socket_recv(socket_t* self, char* buffer, size_t buffer_len) {
-  memset(buffer, 0, buffer_len);
   return recv(self->file_d, buffer, buffer_len, 0);
 }
 

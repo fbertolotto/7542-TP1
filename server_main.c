@@ -5,11 +5,6 @@
 #define MAX_QUEUE 1
 #define ARG_N 4
 
-
-static void clean_buffer(char* buffer,int buf_len) {
-  memset(buffer,0,buf_len);
-}
-
 static int create_listen_socket(socket_t* server, addrinfo_t* info) {
   int sock_i = socket_init(server, info);
   int sock_b = socket_bind(server);
