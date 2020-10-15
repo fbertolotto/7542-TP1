@@ -6,6 +6,7 @@
 typedef struct crypto {
   void* key;
   char method[MAX_LENGHT];
+  int pos;
   void (*encrypter)(struct crypto* self, char* msg, size_t msg_len,
                     char* buffer);
   void (*decrypter)(struct crypto* self, char* msg, size_t msg_len,

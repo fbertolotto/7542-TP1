@@ -33,6 +33,7 @@ static void crypto_create_method(crypto_t* self) {
     if (!strcmp(self->method, "vigenere")) {
         self->encrypter = vigenere_encrypt;
         self->decrypter = vigenere_decrypt;
+        self->pos = 0;
     }
     if (!strcmp(self->method, "rc4")) {
         self->encrypter = rc4_encrypt;

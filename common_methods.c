@@ -2,51 +2,62 @@
 
 #define DIC_LENGTH 256
 
-void ceaser_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
+static void ceaser(crypto_t* self, char* msg, size_t msg_len, char* buffer,
+                   char* op) {
   int i = 0;
   size_t key = (size_t)atoi((char*)self->key);
   for (; i < msg_len; i++) {
     int char_numb = (int)msg[i];
-    buffer[i] = (char)((char_numb + key) % DIC_LENGTH);
+    if (!strcmp(op, "sum")) {
+      buffer[i] = (char)((char_numb + key) % DIC_LENGTH);
+    } else {
+      buffer[i] = (char)((char_numb - key) % DIC_LENGTH);
+    }
   }
+}
+
+void ceaser_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
+  ceaser(self, msg, msg_len, buffer, "sum");
 }
 
 void ceaser_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
-  int i = 0;
-  size_t key = (size_t)atoi((char*)self->key);
-  for (; i < msg_len; i++) {
-    int char_numb = (int)msg[i];
-    buffer[i] = (char)((char_numb - key) % DIC_LENGTH);
+  ceaser(self, msg, msg_len, buffer, "sub");
+}
+
+static void vigenere_msg_numb(char c, int* buffer) {
+  *buffer = (int)c;
+}
+
+static void vigenere_key_numb(char* key, int pos, int len, int* buffer) {
+  if (pos <= len) {
+    *buffer = (int)key[pos];
+  } else {
+    *buffer = (int)key[(pos % strlen(key))];
   }
 }
 
-void vigenere_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
+static void vigenere(crypto_t* self, char* msg, size_t msg_len, char* buffer,
+                     char* op) {
   char* key = (char*)self->key;
+  int char_numb_msg;
   int char_numb_key;
-  int i = 0;
-  for (; i < msg_len; i++) {
-    int char_numb_msg = (int)msg[i];
-    if (i <= strlen(key) - 1) {
-      char_numb_key = (int)key[i];
+  for (int i = 0; i < msg_len; i++) {
+    vigenere_msg_numb(msg[i], &char_numb_msg);
+    vigenere_key_numb(key, self->pos, strlen(key) - 1, &char_numb_key);
+    self->pos++;
+    if (!strcmp(op, "sum")) {
+      buffer[i] = (char)((char_numb_msg + char_numb_key) % DIC_LENGTH);
     } else {
-      char_numb_key = (int)key[(i % strlen(key))];
+      buffer[i] = (char)((char_numb_msg - char_numb_key) % DIC_LENGTH);
     }
-    buffer[i] = (char)((char_numb_msg + char_numb_key) % DIC_LENGTH);
   }
+}
+void vigenere_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
+  vigenere(self, msg, msg_len, buffer, "sum");
 }
 
 void vigenere_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
-  char* key = (char*)self->key;
-  int char_numb_key;
-  for (int i = 0; i < msg_len; i++) {
-    int char_numb_msg = (int)msg[i];
-    if (i <= strlen(key) - 1) {
-      char_numb_key = (int)key[i];
-    } else {
-      char_numb_key = (int)key[(i % strlen(key))];
-    }
-    buffer[i] = (char)((char_numb_msg - char_numb_key) % DIC_LENGTH);
-  }
+  vigenere(self, msg, msg_len, buffer, "sub");
 }
 
 void swap(char* s, unsigned int i, unsigned int j) {
@@ -74,7 +85,6 @@ void rc4_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
     j = (j + S[i]) & 255;
     swap(S, i, j);
     char value = S[(S[i] + S[j]) & 255];
-    // printf("%02X", (msg[y] ^ value) & 0xff );
     buffer[y] = msg[y] ^ value;
   }
 }
