@@ -75,7 +75,7 @@ static int get_parameters(int argc, char** argv, char params[ARG_N][ARG_LEN]) {
 int main(int argc, char* argv[]) {
   socket_t server, conect;
   char params[ARG_N][ARG_LEN];  // port,method,key
-  get_parameters(argc, argv, params);
+  if (get_parameters(argc, argv, params)) return 0;
 
   if (!server_start(&server, params[0])) {
     if (!server_accept(&server, &conect)) {

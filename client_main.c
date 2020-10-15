@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
   crypto_t crypto;
   file_reader_t fr;
   char params[ARG_N][ARG_LEN];  // host,port,method,key
-  get_parameters(argc, argv, params);
+  if (get_parameters(argc, argv, params)) return 0;
 
   if (!start_connection(&client, params[0], params[1])) {
     if (!init_structs(&fr, &crypto, params[2], params[3])) {
