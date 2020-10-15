@@ -35,25 +35,29 @@ static void show_msg(char* msg) {
   clean_buffer(msg, CHUNK);
 }
 
+static int create_crypto(crypto_t* crypto, char* key, char* method) {
+    int init = crypto_init(crypto, key, method);
+    if (init) {
+      crypto_destroy(crypto);
+      return 1;
+    }
+    return 0;
+  }
+
 static void server_process(socket_t* socket, char* method, char* key) {
   crypto_t crypto;
   char buffer[CHUNK], saver[CHUNK];
   clean_buffer(buffer, CHUNK);
   clean_buffer(saver, CHUNK);
-  int cr_i = crypto_init(&crypto, key, method);
-  if (cr_i) {
-    crypto_destroy(&crypto);
-    return;
-  }
-  int bytes_recv = socket_recv(socket, buffer, CHUNK - 1);
-  if (bytes_recv == -1) return;
-  while (bytes_recv != 0) {
-    decrypt_msg(&crypto, buffer, bytes_recv, saver);
+  int error = create_crypto(&crypto, key, method);
+  if (error) return;
+  int b_r = 1;
+  while (b_r) {
+    b_r = socket_recv(socket, buffer, CHUNK - 1);
+    if (b_r == 0 || b_r == -1) return;
+    decrypt_msg(&crypto, buffer, b_r, saver);
     show_msg(saver);
-    bytes_recv = socket_recv(socket, buffer, CHUNK - 1);
-    if (bytes_recv == -1) return;
   }
-  return;
 }
 
 static void server_finish(socket_t* server, socket_t* conection) {
