@@ -16,7 +16,7 @@ static int start_connection(socket_t* client, char* host, char* port) {
 
 static int send_to_sv(socket_t* client, char* msg, size_t msg_len) {
   int i = 0;
-  while (i != msg_len) {
+  while (i < msg_len) {
     int bytes = socket_send(client, msg, msg_len);
     if (bytes == -1) return 1;
     i += bytes;
@@ -25,9 +25,9 @@ static int send_to_sv(socket_t* client, char* msg, size_t msg_len) {
   return 0;
 }
 
-static int start_program(socket_t* client, crypto_t* crypto,
+static void start_program(socket_t* client, crypto_t* crypto,
                          file_reader_t* fr) {
-  int error = 1;
+  int error = 0;
   char msg_buf[CHUNK], crypto_buf[CHUNK];
   clean_buffer(msg_buf, CHUNK);
   clean_buffer(crypto_buf, CHUNK);
@@ -36,8 +36,8 @@ static int start_program(socket_t* client, crypto_t* crypto,
     crypto_encrypt(crypto, msg_buf, msg_len, crypto_buf, CHUNK);
     clean_buffer(msg_buf, CHUNK);
     error = send_to_sv(client, crypto_buf, msg_len);  // len crypto = len msg
+    if (error) return;
   }
-  return error;
 }
 
 static int get_parameters(int argc, char** argv, char params[ARG_N][ARG_LEN]) {
