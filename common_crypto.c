@@ -4,12 +4,13 @@
 #include "common_crypto.h"
 #include "common_methods.h"
 
-static void crypto_create_method(crypto_t* self);
+static void crypto_create_method(crypto_t* self, char* method);
 
 int crypto_init(crypto_t* self, void* key, char* method) {
-    strncpy(self->method, method, MAX_LENGHT);
     self->key = key;
-    crypto_create_method(self);
+    self->pos_i = 0;
+    self->pos_j = 0;
+    crypto_create_method(self, method);
     return 0;
 }
 
@@ -25,18 +26,18 @@ void crypto_decrypt(crypto_t* self, char* msg,
 
 int crypto_destroy(crypto_t* self) {return 0;}
 
-static void crypto_create_method(crypto_t* self) {
-    if (!strcmp(self->method, "cesar")) {
+static void crypto_create_method(crypto_t* self, char* method) {
+    if (!strcmp(method, "cesar")) {
         self->encrypter = ceaser_encrypt;
         self->decrypter = ceaser_decrypt;
     }
-    if (!strcmp(self->method, "vigenere")) {
+    if (!strcmp(method, "vigenere")) {
         self->encrypter = vigenere_encrypt;
         self->decrypter = vigenere_decrypt;
-        self->pos = 0;
     }
-    if (!strcmp(self->method, "rc4")) {
+    if (!strcmp(method, "rc4")) {
         self->encrypter = rc4_encrypt;
         self->decrypter = rc4_decrypt;
+        rc4_init(self->S, self->key);
     }
 }

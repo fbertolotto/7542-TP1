@@ -13,5 +13,6 @@ void vigenere_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer);
 void vigenere_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer);
 void rc4_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer);
 void rc4_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer);
+void rc4_init(char* S, void* key);
 
 #endif // METHODS_H

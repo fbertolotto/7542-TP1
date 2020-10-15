@@ -1,12 +1,14 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 #include <stddef.h>
-#define MAX_LENGHT 50
+
+#define RC4_DIC 256
 
 typedef struct crypto {
   void* key;
-  char method[MAX_LENGHT];
-  int pos;
+  int pos_i;
+  int pos_j;
+  char S[RC4_DIC];
   void (*encrypter)(struct crypto* self, char* msg, size_t msg_len,
                     char* buffer);
   void (*decrypter)(struct crypto* self, char* msg, size_t msg_len,
