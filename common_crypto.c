@@ -26,7 +26,7 @@ void crypto_decrypt(crypto_t* self, char* msg,
 int crypto_destroy(crypto_t* self) {return 0;}
 
 static void crypto_create_method(crypto_t* self) {
-    if (!strcmp(self->method, "ceaser")) {
+    if (!strcmp(self->method, "cesar")) {
         self->encrypter = ceaser_encrypt;
         self->decrypter = ceaser_decrypt;
     }
