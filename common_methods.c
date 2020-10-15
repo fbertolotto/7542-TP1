@@ -5,7 +5,7 @@
 static void ceaser(crypto_t* self, char* msg, size_t msg_len, char* buffer,
                    char* op) {
   int i = 0;
-  size_t key = (size_t)atoi((char*)self->key);
+  size_t key = (size_t)atoi(self->key);
   for (; i < msg_len; i++) {
     int char_numb = (int)msg[i];
     if (!strcmp(op, "sum")) {
@@ -38,7 +38,7 @@ static void vigenere_key_numb(char* key, int pos, int len, int* buffer) {
 
 static void vigenere(crypto_t* self, char* msg, size_t msg_len, char* buffer,
                      char* op) {
-  char* key = (char*)self->key;
+  char* key = self->key;
   int char_numb_msg;
   int char_numb_key;
   for (int i = 0; i < msg_len; i++) {
@@ -66,8 +66,8 @@ void swap(char* s, unsigned int i, unsigned int j) {
   s[j] = temp;
 }
 
-void rc4_init(char* S, void* key_p) {
-  char* key = (char*)key_p;
+void rc4_init(char* S, char* key_p) {
+  char* key = key_p;
   size_t key_len = strlen(key);
   int i, j;
   for (i = 0; i < 256; i++) S[i] = (char)i;

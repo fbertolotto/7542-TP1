@@ -6,8 +6,8 @@
 
 static void crypto_create_method(crypto_t* self, char* method);
 
-int crypto_init(crypto_t* self, void* key, char* method) {
-    self->key = key;
+int crypto_init(crypto_t* self, char* key, char* method) {
+    strncpy(self->key, key, KEY_MAX_SIZE - 1);
     self->pos_i = 0;
     self->pos_j = 0;
     crypto_create_method(self, method);

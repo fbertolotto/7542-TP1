@@ -9,7 +9,7 @@
 #include <sys/types.h>
 
 #define CHUNK 65
-#define ARG_LEN 10
+#define ARG_LEN 51
 
 typedef struct addrinfo addrinfo_t;
 

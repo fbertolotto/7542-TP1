@@ -40,7 +40,7 @@ static int server_process(socket_t* socket, char* method, char* key) {
   char buffer[CHUNK], saver[CHUNK];
   clean_buffer(buffer, CHUNK);
   clean_buffer(saver, CHUNK);
-  int cr_i = crypto_init(&crypto, (void*)key, method);
+  int cr_i = crypto_init(&crypto, key, method);
   if (cr_i) {
     crypto_destroy(&crypto);
     return cr_i;

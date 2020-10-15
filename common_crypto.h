@@ -3,9 +3,10 @@
 #include <stddef.h>
 
 #define RC4_DIC 256
+#define KEY_MAX_SIZE 51
 
 typedef struct crypto {
-  void* key;
+  char key[KEY_MAX_SIZE];
   int pos_i;
   int pos_j;
   char S[RC4_DIC];
@@ -15,7 +16,7 @@ typedef struct crypto {
                     char* buffer);
 } crypto_t;
 
-int crypto_init(crypto_t* self, void* key, char* method);
+int crypto_init(crypto_t* self, char* key, char* method);
 void crypto_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer,
                     size_t buf_len);
 void crypto_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer,
