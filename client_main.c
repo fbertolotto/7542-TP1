@@ -15,9 +15,9 @@ static int start_connection(socket_t* client, char* host, char* port) {
 }
 
 static int send_to_sv(socket_t* client, char* msg, size_t msg_len) {
-  int t_b_s = 0, b_s = 0;
+  int t_b_s = 0;
   while (t_b_s < msg_len) {
-    b_s = socket_send(client, &msg[t_b_s], msg_len - t_b_s);
+    int b_s = socket_send(client, &msg[t_b_s], msg_len - t_b_s);
     if (b_s == -1) return 1;
     t_b_s += b_s;
   }
