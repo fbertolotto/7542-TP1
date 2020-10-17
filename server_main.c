@@ -26,7 +26,7 @@ static int server_accept(socket_t* sv, socket_t* conect) {
 }
 
 static void decrypt_msg(crypto_t* crypto, char* msg, int n, char* buffer) {
-  crypto_decrypt(crypto, msg, n, buffer, CHUNK - 1);
+  crypto_decrypt(crypto, msg, n, buffer);
   clean_buffer(msg, CHUNK);
 }
 

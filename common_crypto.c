@@ -14,13 +14,11 @@ int crypto_init(crypto_t* self, char* key, char* method) {
     return 0;
 }
 
-void crypto_encrypt(crypto_t* self, char* msg,
-                    size_t msg_len, char* buffer, size_t buf_len) {
+void crypto_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
     self->encrypter(self, msg, msg_len, buffer);
 }
 
-void crypto_decrypt(crypto_t* self, char* msg,
-                    size_t msg_len, char* buffer, size_t buf_len) {
+void crypto_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
     self->decrypter(self, msg, msg_len, buffer);
 }
 

@@ -70,9 +70,9 @@ void rc4_init(char* S, char* key_p) {
   char* key = key_p;
   size_t key_len = strlen(key);
   int i, j;
-  for (i = 0; i < 256; i++) S[i] = (char)i;
-  for (i = j = 0; i < 256; i++) {
-    j = (j + key[i % key_len] + S[i]) & 255;
+  for (i = 0; i < DIC_LENGTH; i++) S[i] = (char)i;
+  for (i = j = 0; i < DIC_LENGTH; i++) {
+    j = (j + key[i % key_len] + S[i]) & (DIC_LENGTH - 1);
     swap(S, i, j);
   }
 }
@@ -83,10 +83,10 @@ void rc4_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
   int* j = &self->pos_j;
   int y = 0;
   for (; y < msg_len; y++) {
-    *i = (*i + 1) & 255;
-    *j = (*j + S[*i]) & 255;
+    *i = (*i + 1) & (DIC_LENGTH - 1);
+    *j = (*j + S[*i]) & (DIC_LENGTH - 1);
     swap(S, *i, *j);
-    char value = S[(S[*i] + S[*j]) & 255];
+    char value = S[(S[*i] + S[*j]) & (DIC_LENGTH - 1)];
     buffer[y] = msg[y] ^ value;
   }
 }

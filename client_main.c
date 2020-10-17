@@ -32,7 +32,7 @@ static void start_program(socket_t* client, crypto_t* crypto,
   clean_buffer(crypto_buf, CHUNK);
   size_t bytes_read;
   while ((bytes_read = file_reader_read(fr, msg_buf, CHUNK))) {
-    crypto_encrypt(crypto, msg_buf, bytes_read, crypto_buf, CHUNK);
+    crypto_encrypt(crypto, msg_buf, bytes_read, crypto_buf);
     clean_buffer(msg_buf, CHUNK);
     int error = send_to_sv(client, crypto_buf, bytes_read);
     if (error) return;
