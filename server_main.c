@@ -30,8 +30,8 @@ static void decrypt_msg(crypto_t* crypto, char* msg, int n, char* buffer) {
   clean_buffer(msg, CHUNK);
 }
 
-static void show_msg(char* msg) {
-  fprintf(stdout, "%s", msg);
+static void show_msg(char* msg, int size) {
+  fwrite(msg, 1, size, stdout);
   clean_buffer(msg, CHUNK);
 }
 
@@ -56,7 +56,7 @@ static void server_process(socket_t* socket, char* method, char* key) {
     b_r = socket_recv(socket, buffer, CHUNK - 1);
     if (b_r == 0 || b_r == -1) return;
     decrypt_msg(&crypto, buffer, b_r, saver);
-    show_msg(saver);
+    show_msg(saver, b_r);
   }
 }
 
