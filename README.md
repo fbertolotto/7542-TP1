@@ -19,21 +19,25 @@ Los métodos disponibles serán:
 
 ## Diseño General
 
-La estructura general del programa se divide en dos grandes módulos. El primero es el **socket**, que se encarga de la comunicación entre ambas partes y el segundo es el **criptografo** (crypto) que maneja los distintos métodos y realiza las acciones necesarias para la encriptacion o desencriptacion según sea el caso.
+La estructura general del programa se divide en dos grandes módulos. El primero es el **socket**, que se encarga de la comunicación entre ambas partes y el segundo es el **criptógrafo** (crypto) que maneja los distintos métodos y realiza las acciones necesarias para la encriptacion o desencriptacion según sea el caso.
 
 
 ![Estructura General](Informe/estructura.png)
 
 ## Problemas Principales
 
-### Criptografo
+### Distintos Metodos
 
-El criptografo se crea de forma genérica (sin estar condicionado por su tarea), si bien el servidor no encripta en este ejercicio, el `crypto` que posee tiene las capacidades de encriptar en caso de ser necesario. Lo mismo pero al revés ocurre con el cliente, quien no descifra nada. 
+La diferencia principal de los métodos, es su modo de operar; sin embargo los tres poseen `encriptar` y `desencriptar`. Para unirlos sin necesidad de tener una estructura por cada uno, se utilizo el `criptógrafo` quien posee un puntero a una función de encriptación  y otro a una función de desencriptación. De esta forma, al inicializar un criptógrafo, lo único que se debe variar son esos punteros, ya que entre método y método la diferencia es la función que se ejecuta. 
+
+### criptógrafo
+
+El criptógrafo se crea de forma genérica (sin estar condicionado por su tarea), si bien el servidor no encripta en este ejercicio, el `crypto` que posee tiene las capacidades de encriptar en caso de ser necesario. Lo mismo pero al revés ocurre con el cliente, quien no descifra nada. 
 De esta manera, la ampliación de una comunicación `servidor -> cliente` encriptada es posible sin la necesidad de modificar el `crypto` que ya inicializaron.
 
 ### Variables que persisten a lo largo de todo el mensaje
 
-Los métodos Vigenere y RC4 poseen ciertas variables que permisten a lo largo de todo el mensaje a descifrar. Para solucionar esto, el crypto reserva ciertos atributos para que puedan perdurar a lo largo de su existencia; ya que es lógico que cuando se destruya el crypto signifique que se termino y por lo tanto se pueden eliminar.
+Los métodos Vigenere y RC4 poseen ciertas variables que persisten a lo largo de todo el mensaje a descifrar. Para solucionar esto, el crypto reserva ciertos atributos para que puedan perdurar a lo largo de su existencia; ya que es lógico que cuando se destruya el crypto signifique que se termino y por lo tanto se pueden eliminar.
 
 
 ### Envio y recepcion de bytes
@@ -54,7 +58,7 @@ Para comprender mejor el programa en general se presentan varios diagramas.
 
 ![Flujo Envio](Informe/client_flow.png)
 
-En este diagrama se aprecia el flujo del envio de datos, notar que este proceso se repite siempre y cuando el read del file_reader devuelva un valor distinto de 0. En ese momento termina la ejecución.
+En este diagrama se aprecia el flujo del envio de datos, notar que este proceso se repite siempre y cuando el `read` del `file_reader` devuelva un valor distinto de `0`. En ese momento termina la ejecución.
 
 ### Flujo de Recepcion
 
