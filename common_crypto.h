@@ -2,18 +2,15 @@
 #define CRYPTO_H
 #include <stddef.h>
 
-#define RC4_DIC 256
-#define KEY_MAX_SIZE 51
+#include "common_ceaser_method.h"
+#include "common_rc4_method.h"
+#include "common_vigenere_method.h"
 
 typedef struct crypto {
-  char key[KEY_MAX_SIZE];
-  int pos_i;
-  int pos_j;
-  char S[RC4_DIC];
-  void (*encrypter)(struct crypto* self, char* msg, size_t msg_len,
-                    char* buffer);
-  void (*decrypter)(struct crypto* self, char* msg, size_t msg_len,
-                    char* buffer);
+  char* name;
+  rc4_method_t rc4;
+  vigenere_method_t vigenere;
+  ceaser_method_t ceaser;
 } crypto_t;
 
 /* Inicializa un crypto (criptografo) según el metodo y la clave especificada.
@@ -31,4 +28,4 @@ void crypto_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer);
 /* Destruye el crypto. Devuelve 0. */
 int crypto_destroy(crypto_t* self);
 
-#endif // CRYPTO_H
+#endif  // CRYPTO_H

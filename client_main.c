@@ -1,7 +1,7 @@
-#include "common_crypto.h"
 #include "common_functions.h"
-#include "common_socket.h"
 #include "client_file_reader.h"
+#include "common_crypto.h"
+#include "common_socket.h"
 
 #define ARG_N 5
 
@@ -26,7 +26,7 @@ static int send_to_sv(socket_t* client, char* msg, size_t msg_len) {
 }
 
 static void start_program(socket_t* client, crypto_t* crypto,
-                         file_reader_t* fr) {
+                          file_reader_t* fr) {
   char msg_buf[CHUNK], crypto_buf[CHUNK];
   clean_buffer(msg_buf, CHUNK);
   clean_buffer(crypto_buf, CHUNK);

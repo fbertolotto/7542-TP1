@@ -1,5 +1,5 @@
-#include "common_crypto.h"
 #include "common_functions.h"
+#include "common_crypto.h"
 #include "common_socket.h"
 
 #define MAX_QUEUE 1
@@ -36,13 +36,13 @@ static void show_msg(char* msg, int size) {
 }
 
 static int create_crypto(crypto_t* crypto, char* key, char* method) {
-    int init = crypto_init(crypto, key, method);
-    if (init) {
-      crypto_destroy(crypto);
-      return 1;
-    }
-    return 0;
+  int init = crypto_init(crypto, key, method);
+  if (init) {
+    crypto_destroy(crypto);
+    return 1;
   }
+  return 0;
+}
 
 static void server_process(socket_t* socket, char* method, char* key) {
   crypto_t crypto;
