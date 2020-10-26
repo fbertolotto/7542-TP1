@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common_method.h"
-
 int load_method(crypto_t* self, char* method, char* key) {
   if (!strcmp(method, "cesar")) return ceaser_init(&self->ceaser, key);
   if (!strcmp(method, "vigenere")) return vigenere_init(&self->vigenere, key);
@@ -20,13 +18,12 @@ int crypto_init(crypto_t* self, char* key, char* method) {
 
 void crypto_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
   char* method = self->name;
-  if (!strcmp(method, "cesar")) {
+  if (!strcmp(method, "cesar"))
     ceaser_encrypt(&self->ceaser, msg, msg_len, buffer);
-  } else if (!strcmp(method, "vigenere")) {
+  else if (!strcmp(method, "vigenere"))
     vigenere_encrypt(&self->vigenere, msg, msg_len, buffer);
-  } else if (!strcmp(method, "rc4")) {
+  else if (!strcmp(method, "rc4"))
     rc4_encrypt(&self->rc4, msg, msg_len, buffer);
-  }
 }
 
 void crypto_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
