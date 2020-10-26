@@ -1,23 +1,36 @@
-#include "common_functions.h"
+#define _POSIX_C_SOURCE 200112L
+#include <netdb.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #include "common_crypto.h"
 #include "common_socket.h"
 
+#define CHUNK 64
+#define ARG_LEN 51
 #define MAX_QUEUE 1
 #define ARG_N 4
 
-static int create_listen_socket(socket_t* server, addrinfo_t* info) {
-  int sock_i = socket_init(server, info);
-  int sock_b = socket_bind(server);
-  int sock_l = socket_listen(server, MAX_QUEUE);
-  return (sock_i || sock_b || sock_l);
+static void clean_param(char* arg, char* buffer, size_t buf_len) {
+  memset(buffer, 0, buf_len);
+  strtok(arg, "=");
+  char* tmp = strtok(NULL, "=");
+  memcpy(buffer, tmp, buf_len);
 }
 
-static int server_start(socket_t* server, char* port) {
-  addrinfo_t sv_hints, *server_info;
-  set_net_flags(&sv_hints);
-  get_system_info(&sv_hints, &server_info, NULL, port);
-  int c_l_s = create_listen_socket(server, server_info);
-  freeaddrinfo(server_info);
+static int create_listen_socket(socket_t* server, addrinfo_t** info, char* host, char* port) {
+  int sock_i = socket_init(server, info, host, port);
+  int sock_s = socket_start(server);
+  int sock_b = socket_bind(server);
+  int sock_l = socket_listen(server, MAX_QUEUE);
+  return (sock_i || sock_b || sock_l || sock_s);
+}
+
+static int server_start(socket_t* server, char* host, char* port) {
+  addrinfo_t* server_info;
+  int c_l_s = create_listen_socket(server, &server_info, host, port);
   return c_l_s;
 }
 
@@ -27,12 +40,12 @@ static int server_accept(socket_t* sv, socket_t* conect) {
 
 static void decrypt_msg(crypto_t* crypto, char* msg, int n, char* buffer) {
   crypto_decrypt(crypto, msg, n, buffer);
-  clean_buffer(msg, CHUNK);
+  memset(msg, 0, CHUNK);
 }
 
 static void show_msg(char* msg, int size) {
   fwrite(msg, 1, size, stdout);
-  clean_buffer(msg, CHUNK);
+  memset(msg, 0, CHUNK);
 }
 
 static int create_crypto(crypto_t* crypto, char* key, char* method) {
@@ -47,13 +60,13 @@ static int create_crypto(crypto_t* crypto, char* key, char* method) {
 static void server_process(socket_t* socket, char* method, char* key) {
   crypto_t crypto;
   char buffer[CHUNK], saver[CHUNK];
-  clean_buffer(buffer, CHUNK);
-  clean_buffer(saver, CHUNK);
+  memset(buffer, 0, CHUNK);
+  memset(saver, 0, CHUNK);
   int error = create_crypto(&crypto, key, method);
   if (error) return;
   int b_r = 1;
   while (b_r) {
-    b_r = socket_recv(socket, buffer, CHUNK - 1);
+    b_r = socket_recv(socket, buffer, CHUNK);
     if (b_r == 0 || b_r == -1) return;
     decrypt_msg(&crypto, buffer, b_r, saver);
     show_msg(saver, b_r);
@@ -78,7 +91,7 @@ int main(int argc, char* argv[]) {
   char params[ARG_N][ARG_LEN];  // port,method,key
   if (get_parameters(argc, argv, params)) return 0;
 
-  if (!server_start(&server, params[0])) {
+  if (!server_start(&server, NULL, params[0])) {
     if (!server_accept(&server, &conect)) {
       server_process(&conect, params[1], params[2]);
     }

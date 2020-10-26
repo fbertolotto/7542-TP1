@@ -7,16 +7,22 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define MAX_PORT_LENGTH = 10
+#define MAX_PORT_LENGTH 10
+
+typedef struct addrinfo addrinfo_t;
 
 typedef struct socket {
   int file_d;
-  struct addrinfo* info;
+  addrinfo_t* info;
 } socket_t;
 
 /* Inicializa un socket. Devuelve 1 en caso de error y
 0 en caso de éxito */
-int socket_init(socket_t* self, struct addrinfo* info);
+int socket_init(socket_t* self, addrinfo_t** info, char* host, char* port);
+
+/* Itera los posibles valores obtenidos por el Sistema Operativo
+en busca de poder realizar una conexion con el puerto y el host. */
+int socket_start(socket_t* self);
 
 /* Bindea un socket al puerto asignado por el sistema.
 Devuelve 1 en caso de error y 0 en éxito */
@@ -35,7 +41,7 @@ int socket_accept(socket_t* self, socket_t* new);
 /* Itera las opciones de servidores posibles e intenta
 conectarse. En caso de conseguirlo devuelve 0 y el socket
 queda cargado con la conexión. En error devuelve 1 */
-int socket_connect(socket_t* self, struct addrinfo* servers);
+int socket_connect(socket_t* self, addrinfo_t** servers, char* host, char* port);
 
 /* Enviá el mensaje a traves del socket. Devuelve la
 cantidad de bytes que logro enviar y -1 en caso de
@@ -49,5 +55,7 @@ int socket_recv(socket_t* self, char* buffer, size_t buffer_len);
 
 /* Destruye el socket. Devuelve 0 */
 int socket_destroy(socket_t* self);
+
+
 
 #endif  // SOCKET_H
