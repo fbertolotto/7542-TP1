@@ -20,10 +20,23 @@ typedef struct server {
   char* key;
 } server_t;
 
+/* Inicializa un servidor. Recibe el puerto, el metodo y la clave
+a utilizar en la desencriptacion y recibo de datos. Devuelve 0 en éxito */
 int server_init(server_t* self, char* port, char* method, char* key);
+
+/* Prepara al servidor para escuchar una conexión. Devuelve 0 en éxito. */
 int server_start(server_t* self);
+
+/* El servidor espera activamente una conexion, una vez detectada intenta
+realizarla, en caso de éxito devuelve 0. */
 int server_accept(server_t* self);
+
+/* El servidor comienza a recibir datos de la conexion establecida, y a
+medida que los reciba, los desencripta y los escribe en stdout. Este
+proceso termina cuando la conexion es terminada por parte del cliente. */
 void server_process(server_t* self);
+
+/* Se elimina el servidor. Destruye las estructuras internas utilizadas. */
 void server_finish(server_t* self);
 
 #endif  // SERVER_H

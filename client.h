@@ -22,10 +22,20 @@ typedef struct client {
   char* key;
 } client_t;
 
+/* Inicializa un cliente. Recibe el host, el puerto, el metodo y la clave
+a utilizar en la encriptacion y envió de datos. Devuelve 0 en éxito */
 int client_init(client_t* self, char* host, char* port, char* method,
                 char* key);
+
+/* Conecta al cliente al host:puerto especificado en el inicializador.
+Devuelve 0 en éxito. */
 int client_connect(client_t* self);
+
+/* Empieza a encriptar y enviar datos. Repite el proceso hasta encontrar un
+EOF en stdin. */
 void client_start(client_t* self);
+
+/* Se elimina el cliente. Destruye las estructuras internas utilizadas. */
 void client_finish(client_t* self);
 
 #endif  // CLIENT_H
