@@ -1,101 +1,21 @@
-#define _POSIX_C_SOURCE 200112L
-#include <netdb.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-
-#include "common_crypto.h"
-#include "common_socket.h"
-
-#define CHUNK 64
-#define ARG_LEN 51
-#define MAX_QUEUE 1
-#define ARG_N 4
-
-static void clean_param(char* arg, char* buffer, size_t buf_len) {
-  memset(buffer, 0, buf_len);
-  strtok(arg, "=");
-  char* tmp = strtok(NULL, "=");
-  memcpy(buffer, tmp, buf_len);
-}
-
-static int create_listen_socket(socket_t* server, addrinfo_t** info, char* host, char* port) {
-  int sock_i = socket_init(server, info, host, port);
-  int sock_s = socket_start(server);
-  int sock_b = socket_bind(server);
-  int sock_l = socket_listen(server, MAX_QUEUE);
-  return (sock_i || sock_b || sock_l || sock_s);
-}
-
-static int server_start(socket_t* server, char* host, char* port) {
-  addrinfo_t* server_info;
-  int c_l_s = create_listen_socket(server, &server_info, host, port);
-  return c_l_s;
-}
-
-static int server_accept(socket_t* sv, socket_t* conect) {
-  return socket_accept(sv, conect);
-}
-
-static void decrypt_msg(crypto_t* crypto, char* msg, int n, char* buffer) {
-  crypto_decrypt(crypto, msg, n, buffer);
-  memset(msg, 0, CHUNK);
-}
-
-static void show_msg(char* msg, int size) {
-  fwrite(msg, 1, size, stdout);
-  memset(msg, 0, CHUNK);
-}
-
-static int create_crypto(crypto_t* crypto, char* key, char* method) {
-  int init = crypto_init(crypto, key, method);
-  if (init) {
-    crypto_destroy(crypto);
-    return 1;
-  }
-  return 0;
-}
-
-static void server_process(socket_t* socket, char* method, char* key) {
-  crypto_t crypto;
-  char buffer[CHUNK], saver[CHUNK];
-  memset(buffer, 0, CHUNK);
-  memset(saver, 0, CHUNK);
-  int error = create_crypto(&crypto, key, method);
-  if (error) return;
-  int b_r = 1;
-  while (b_r) {
-    b_r = socket_recv(socket, buffer, CHUNK);
-    if (b_r == 0 || b_r == -1) return;
-    decrypt_msg(&crypto, buffer, b_r, saver);
-    show_msg(saver, b_r);
-  }
-}
-
-static void server_finish(socket_t* server, socket_t* conection) {
-  socket_destroy(server);
-  socket_destroy(conection);
-}
-
-static int get_parameters(int argc, char** argv, char params[ARG_N][ARG_LEN]) {
-  if (argc != ARG_N) return 1;
-  memcpy(params[0], argv[1], ARG_LEN);
-  clean_param(argv[2], params[1], ARG_LEN);
-  clean_param(argv[3], params[2], ARG_LEN);
-  return 0;
-}
+#include "server.h"
 
 int main(int argc, char* argv[]) {
-  socket_t server, conect;
-  char params[ARG_N][ARG_LEN];  // port,method,key
-  if (get_parameters(argc, argv, params)) return 0;
+  server_t server;
+  memset(&server, 0, sizeof(server_t));
 
-  if (!server_start(&server, NULL, params[0])) {
-    if (!server_accept(&server, &conect)) {
-      server_process(&conect, params[1], params[2]);
+  if (argc != ARG_N) return 0;
+  strtok(argv[2], "=");
+  char* method = strtok(NULL, "=");
+  strtok(argv[3], "=");
+  char* key = strtok(NULL, "=");
+
+  if (server_init(&server, argv[1], method, key)) return 0;
+  if (!server_start(&server)) {
+    if (!server_accept(&server)) {
+      server_process(&server);
     }
   }
-  server_finish(&server, &conect);
+  server_finish(&server);
   return 0;
 }

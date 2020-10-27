@@ -53,9 +53,9 @@ int socket_accept(socket_t* self, socket_t* new) {
   return 0;
 }
 
-
-int socket_connect(socket_t* self, addrinfo_t** results, char* host, char* port) {
-  socket_init(self,results,host,port);
+int socket_connect(socket_t* self, addrinfo_t** results, char* host,
+                   char* port) {
+  socket_init(self, results, host, port);
   addrinfo_t* sv;
   int connected = -1;
   for (sv = self->info; sv != NULL; sv = sv->ai_next) {

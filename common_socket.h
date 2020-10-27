@@ -29,7 +29,7 @@ Devuelve 1 en caso de error y 0 en éxito */
 int socket_bind(socket_t* self);
 
 /* Pone al socket en modo "listen" y asigna el maximo
-de clientes posibles en espera. Devuelve 1 en caso de 
+de clientes posibles en espera. Devuelve 1 en caso de
 error y 0 en éxito */
 int socket_listen(socket_t* self, int queue);
 
@@ -41,7 +41,8 @@ int socket_accept(socket_t* self, socket_t* new);
 /* Itera las opciones de servidores posibles e intenta
 conectarse. En caso de conseguirlo devuelve 0 y el socket
 queda cargado con la conexión. En error devuelve 1 */
-int socket_connect(socket_t* self, addrinfo_t** servers, char* host, char* port);
+int socket_connect(socket_t* self, addrinfo_t** servers, char* host,
+                   char* port);
 
 /* Enviá el mensaje a traves del socket. Devuelve la
 cantidad de bytes que logro enviar y -1 en caso de
@@ -55,7 +56,5 @@ int socket_recv(socket_t* self, char* buffer, size_t buffer_len);
 
 /* Destruye el socket. Devuelve 0 */
 int socket_destroy(socket_t* self);
-
-
 
 #endif  // SOCKET_H
