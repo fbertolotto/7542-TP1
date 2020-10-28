@@ -72,7 +72,7 @@ int socket_connect(socket_t* self, addrinfo_t** results, char* host,
 int socket_send(socket_t* self, char* msg, int len) {
   int t_b_s = 0;
   while (t_b_s < len) {
-    int b_s = send(self->file_d, msg, len, MSG_NOSIGNAL);
+    int b_s = send(self->file_d, &msg[t_b_s], len - t_b_s, MSG_NOSIGNAL);
     if (b_s == -1) return 1;
     t_b_s += b_s;
   }
