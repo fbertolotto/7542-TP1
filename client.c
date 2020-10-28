@@ -34,7 +34,7 @@ void client_start(client_t* self) {
   size_t bytes_read;
   while ((bytes_read = file_reader_read(&self->fr, msg_buf, CHUNK))) {
     crypto_encrypt(&self->crypto, msg_buf, bytes_read, crypto_buf);
-    int error = send_to_sv(&self->client, crypto_buf, bytes_read);
+    error = send_to_sv(&self->client, crypto_buf, bytes_read);
     if (error) return;
   }
 }
