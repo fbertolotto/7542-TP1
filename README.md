@@ -19,7 +19,7 @@ Los métodos disponibles serán:
 
 ## Diseño General
 
-La estructura general del programa se divide en dos grandes módulos. El primero es el **socket**, que se encarga de la comunicación entre ambas partes y el segundo es el **criptógrafo** (crypto) que maneja los distintos métodos y realiza las acciones necesarias para la encriptacion o desencriptacion según sea el caso.
+La estructura general del programa se divide en dos grandes módulos. El primero es el **socket**, que se encarga de la comunicación entre ambas partes y el segundo es el **criptógrafo - metodos** que se encarga de el manejo de los distintos métodos y realiza las acciones necesarias para la encriptacion o desencriptacion según sea el caso.
 
 
 ![Estructura General](Informe/estructura.png)
@@ -28,21 +28,21 @@ La estructura general del programa se divide en dos grandes módulos. El primero
 
 ### Distintos Metodos
 
-La diferencia principal de los métodos, es su modo de operar; sin embargo los tres poseen `encriptar` y `desencriptar`. Para unirlos sin necesidad de tener una estructura por cada uno, se utilizo el `criptógrafo` quien posee un puntero a una función de encriptación  y otro a una función de desencriptación. De esta forma, al inicializar un criptógrafo, lo único que se debe variar son esos punteros, ya que entre método y método la diferencia es la función que se ejecuta. 
+Para solucionar el problema de los disintos metodos, el criptografo se encarga de tener una referencia a cada tipo existente (en este caso 3), de esta manera el criptografo solo conoce la existencia de lo mismos pero nada mas. Ademas cada método debe poseer: un inicializador, un encriptador, un decriptador y un destructor.
 
-### criptógrafo
+### Criptógrafo
 
 El criptógrafo se crea de forma genérica (sin estar condicionado por su tarea), si bien el servidor no encripta en este ejercicio, el `crypto` que posee tiene las capacidades de encriptar en caso de ser necesario. Lo mismo pero al revés ocurre con el cliente, quien no descifra nada. 
 De esta manera, la ampliación de una comunicación `servidor -> cliente` encriptada es posible sin la necesidad de modificar el `crypto` que ya inicializaron.
 
 ### Variables que persisten a lo largo de todo el mensaje
 
-Los métodos Vigenere y RC4 poseen ciertas variables que persisten a lo largo de todo el mensaje a descifrar. Para solucionar esto, el crypto reserva ciertos atributos para que puedan perdurar a lo largo de su existencia; ya que es lógico que cuando se destruya el crypto signifique que se termino y por lo tanto se pueden eliminar.
+Los métodos Vigenere y RC4 poseen ciertas variables que persisten a lo largo de todo el mensaje a descifrar y Cesar utilizada una key numerica y no una cadena. Para solucionar esto, cada TDA sabe perfectamente que valores necesita mantener, entonces es responsabilidad única y exclusiva del método particular mantener y encargarse de estas invariantes a lo largo del mensaje. El criptografo desconoce estas variables, solo pide encriptar y desencriptar al método correspondiente.
 
 
 ### Envio y recepcion de bytes
 
-Se definió que el envio de bytes seria de 64 (para coincidir con lo leído por stdin). Para garantizar el correcto funcionamiento del crypto y el flujo de datos, se decidió usar un buffer de 65 bytes (64 bytes "visibles" para el uso y el ultimo un `'\0'`). Esto se utilizo como una medida de precaución, sin embargo el programa no depende de encontrar o no un `'\0'` para funcionar correctamente, ya que se guiá exclusivamente por los valores obtenidos por las funciones del sistema. Se encriptan y envían tantos bytes como haya leído el `fread()` y se desencriptan tantos bytes como haya recibido el `recv()`.
+Se definió que el envio de bytes seria de 64 (para coincidir con lo leído por stdin). Para no dpender del tipo de dato enviado, todo se maneja por los resultados obtenidos por las funciones del sistema. Se encriptan y envían tantos bytes como haya leído el `fread()` y se desencriptan tantos bytes como haya recibido el `recv()`. De esta manera, no solo podemos trabajar con textos sino con archivos binarios.
 
 ### Uso de memoria estatica
 
