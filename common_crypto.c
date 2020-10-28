@@ -22,8 +22,7 @@ void crypto_encrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
     ceaser_encrypt(&self->ceaser, msg, msg_len, buffer);
   else if (!strcmp(method, "vigenere"))
     vigenere_encrypt(&self->vigenere, msg, msg_len, buffer);
-  else if (!strcmp(method, "rc4"))
-    rc4_encrypt(&self->rc4, msg, msg_len, buffer);
+  else rc4_encrypt(&self->rc4, msg, msg_len, buffer);
 }
 
 void crypto_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
@@ -32,8 +31,7 @@ void crypto_decrypt(crypto_t* self, char* msg, size_t msg_len, char* buffer) {
     ceaser_decrypt(&self->ceaser, msg, msg_len, buffer);
   else if (!strcmp(method, "vigenere"))
     vigenere_decrypt(&self->vigenere, msg, msg_len, buffer);
-  else if (!strcmp(method, "rc4"))
-    rc4_decrypt(&self->rc4, msg, msg_len, buffer);
+  else rc4_decrypt(&self->rc4, msg, msg_len, buffer);
 }
 
 int crypto_destroy(crypto_t* self) {
