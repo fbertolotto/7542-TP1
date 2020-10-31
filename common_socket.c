@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+/* Setea los flags necesarios para establecer una conexion
+IPV4 - TCP IP. */
 static void set_net_flags(addrinfo_t* hints) {
   memset(hints, 0, sizeof(addrinfo_t));
   hints->ai_family = AF_INET;
@@ -9,6 +11,9 @@ static void set_net_flags(addrinfo_t* hints) {
   hints->ai_flags = 0;
 }
 
+/* Itera todos los valores devueltos por el Sistema
+Operativo en busca de lograr una conexion valida. 
+Devuelve 0 si la encuentra. */
 int socket_start(socket_t* self) {
   addrinfo_t* data;
   int file_d = -1;
